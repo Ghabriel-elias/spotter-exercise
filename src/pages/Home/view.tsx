@@ -26,7 +26,7 @@ export const HomeView = ({
         console.log('te')
        }}>
 
-        <RiFilter3Line size={25}/>
+        <RiFilter3Line color='#333333' size={25}/>
         <S.TextFilter>Filter</S.TextFilter>
        </BoxIconText>
 
