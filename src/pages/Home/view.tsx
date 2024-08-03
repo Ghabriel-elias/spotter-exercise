@@ -4,6 +4,8 @@ import { RowData } from '../../models/sheetData';
 import { RowItem } from '../../Components/RowItem';
 import { Pagination } from '../../Components/Pagination';
 import { useHomeModel } from './model';
+import styled from 'styled-components';
+import { RiFilter3Line } from 'react-icons/ri';
 
 
 export const HomeView = ({
@@ -18,7 +20,17 @@ export const HomeView = ({
 
   return (
     <S.Container>
-      <S.Title>Spotter Exercise</S.Title>
+      <HeaderContainer>
+       <S.Title>Spotter Exercise</S.Title>
+       <BoxIconText onClick={() => {
+        console.log('te')
+       }}>
+
+        <RiFilter3Line size={25}/>
+        <S.TextFilter>Filter</S.TextFilter>
+       </BoxIconText>
+
+      </HeaderContainer>
       <S.TableWrapper>
         <S.StyledTable>
         <thead>
@@ -44,3 +56,24 @@ export const HomeView = ({
     </S.Container>
   )
 }
+
+const HeaderContainer = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+export const BoxIconText = styled.button`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  background-color: #B2B2B2;
+  border: 0px;
+  padding: 0px 10px;
+  border-radius: 8px;
+  height: 3rem;
+  cursor: pointer;
+`;

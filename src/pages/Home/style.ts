@@ -46,3 +46,8 @@ export const StyledTable = styled.table`
   width: 100%;
   border-collapse: collapse;
 `;
+
+export const TextFilter = styled.p`
+  font-size: 1.3em;
+  color: ${({theme}) => theme.colors.colorText};
+`;
