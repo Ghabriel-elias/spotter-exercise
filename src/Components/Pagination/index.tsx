@@ -1,38 +1,33 @@
-import { FiArrowLeft, FiArrowRight } from 'react-icons/fi'
-import * as S from './style'
+import { TablePagination } from '@mui/material';
 
 interface PaginationProps {
   currentPage: number;
-  indexOfLastItem: number;
   totalPages: number;
-  handlePageChange: (page: number) => void
+  handlePageChange: (page: number) => void;
+  rowPerPage: number;
+  handleChangeRow: (row: number) => void;
 }
 
 export const Pagination = ({
   currentPage,
-  indexOfLastItem,
   totalPages,
-  handlePageChange
+  handlePageChange,
+  handleChangeRow,
+  rowPerPage
 }: PaginationProps) => {
   return (
-    <S.Pagination>
-      <S.BoxText>
-        <S.Text>Showing  {(10 * currentPage) - 9} - {indexOfLastItem}</S.Text>
-      </S.BoxText>
-      <S.BoxText>
-        <S.Text>Page {currentPage} - {totalPages}</S.Text>
-        <S.PaginationButton
-          currentPage={currentPage}
-          onClick={() => {
-            if(currentPage && currentPage <= 1 ) return
-            handlePageChange(currentPage - 1)}
-          }>
-          <FiArrowLeft />
-        </S.PaginationButton>
-        <S.PaginationButton onClick={() => handlePageChange(currentPage + 1)}>
-          <FiArrowRight />
-        </S.PaginationButton>
-      </S.BoxText>
-    </S.Pagination>
+    <TablePagination
+      rowsPerPageOptions={[10, 25, 100]}
+      component="div"
+      count={totalPages}
+      rowsPerPage={rowPerPage}
+      page={currentPage - 1}
+      onPageChange={(event, page) => {
+        handlePageChange(page)
+      }}
+      onRowsPerPageChange={(event) => {
+        handleChangeRow(Number(event.target.value))
+      }}
+    />
   )
 }
