@@ -1,3 +1,4 @@
+import { TableContainer } from "@mui/material";
 import styled from "styled-components";
 
 export const Container = styled.div`
@@ -14,7 +15,7 @@ export const Container = styled.div`
   box-sizing: border-box; 
 `;
 
-export const TableWrapper = styled.div`
+export const TableContent = styled(TableContainer)`
   max-height: calc(80vh - 3rem);
   overflow-y: auto;
   overflow-x: auto; 
@@ -49,4 +50,18 @@ export const StyledTable = styled.table`
 
 export const TextFilter = styled.p`
   font-size: 1.3em;
+`;
+
+export const BoxInputAndFilter = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+`;
+
+export const HeaderContainer = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 `;

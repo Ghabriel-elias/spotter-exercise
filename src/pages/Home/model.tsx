@@ -1,31 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
+import { TableData } from '../../models/sheetData';
 
 export const useHomeModel = () => {
-  const [data, setData] = useState([]);
-  const saveData = useRef([])
+  const [data, setData] = useState<TableData[]>([]);
+  const saveData = useRef<TableData[]>([])
   const [currentPage, setCurrentPage] = useState(1)
-  const indexOfLastItem = (currentPage * 10);
-  const indexOfFirstItem = (indexOfLastItem - 10);
-  const currentItems = data?.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(data.length / 10);
+  const [rowPerPage, setRowPerPage] = useState(10)
+  const indexOfLastItem = (currentPage * rowPerPage);
+  const indexOfFirstItem = (indexOfLastItem - rowPerPage);
+  const currentItems: TableData[] = data?.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(data.length / rowPerPage);
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  function normalizeString(str: string) {
-    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase();
-  }
-
-  const searchByName = (term: string) => {
-    if(term.length === 0) {
-      setData(saveData.current)
-      return
-    }
-    const newItems = saveData.current?.filter(item => {
-      return normalizeString(item?.legal_name).includes(normalizeString(term))
-    })
-
-    setData(newItems)
-  }
-  
   const columns = {
     created_dt: 'Created_DT',
     data_source_modified_dt: 'Modifed_DT',
@@ -43,8 +30,27 @@ export const useHomeModel = () => {
 
   const columnsData = [...Object.keys(columns)] 
 
+  function normalizeString(str: string) {
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  }
+
+  const searchByName = (term: string) => {
+    if(term.length === 0) {
+      setData(saveData.current)
+      return
+    }
+    const newItems = saveData.current?.filter(item => {
+      return normalizeString(item?.legal_name).includes(normalizeString(term))
+    })
+    setData(newItems)
+  }
+
   const handlePageChange = (pageNumber: number) => {
-    setCurrentPage(pageNumber);
+    setCurrentPage(pageNumber + 1);
+  };
+
+  const handleChangeRow = (rowPerPage: number) => {
+    setRowPerPage(rowPerPage)
   };
 
   const fetchData = async () => {
@@ -53,6 +59,7 @@ export const useHomeModel = () => {
     const url = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&gid=${sheetId}`;
   
     try {
+      setLoading(true)
       const response = await fetch(url);
       const text = await response.text();
       const rows = text.split('\n').map(row => row.split(','));
@@ -75,6 +82,8 @@ export const useHomeModel = () => {
       }
     } catch (error) {
       setError(`Error fetching data: ${error}`)
+    } finally {
+      setLoading(false)
     }
   }
     
@@ -91,6 +100,9 @@ export const useHomeModel = () => {
     totalPages,
     searchByName,
     columnsData,
-    error
+    error,
+    handleChangeRow,
+    rowPerPage,
+    loading
   }
 }
