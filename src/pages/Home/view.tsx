@@ -7,6 +7,7 @@ import {Loading} from '../../Components/Loading';
 import { Input } from '../../Components/Input';
 import { RowItem } from '../../Components/RowItem';
 import { Filter } from '../../Components/Filter';
+import { EmptySearch } from '../../Components/EmptySearch';
 
 export const HomeView = ({
   columns,
@@ -19,16 +20,15 @@ export const HomeView = ({
   rowPerPage,
   handleChangeRow,
   loading,
-  error,
   handleClose,
   handleMenuItemClick,
   handleToggle,
   open,
   options,
   selectedIndex,
-  anchorRef
+  anchorRef,
 }: ReturnType<typeof useHomeModel>) => {
-  
+
   if(loading) {
     return (
       <Loading/>
@@ -59,11 +59,14 @@ export const HomeView = ({
               columns={columns}
               columnsData={columnsData}
             />
-          </TableHead>
+          </TableHead>    
           <RowItem
             currentItems={currentItems}
           />
         </Table>
+        {currentItems.length === 0 ? (
+          <EmptySearch/>
+        ) : null}
       </S.TableContent>
       <Pagination
         currentPage={currentPage}
