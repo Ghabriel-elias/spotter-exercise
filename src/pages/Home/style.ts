@@ -16,7 +16,7 @@ export const Container = styled.div`
 `;
 
 export const TableContent = styled(TableContainer)`
-  max-height: calc(80vh - 3rem);
+  max-height: calc(83vh - 3rem);
   overflow-y: auto;
   overflow-x: auto; 
   box-sizing: border-box;
@@ -37,6 +37,12 @@ export const TableContent = styled(TableContainer)`
   }
   @media (max-width: 680px) {
     max-height: calc(75vh - 3rem);
+  }
+  @media (max-width: 580px) {
+    max-height: calc(83vh - 3rem);
+  }
+  @media (max-width: 446px) {
+    max-height: calc(80vh - 3rem);
   }
 `;
 
