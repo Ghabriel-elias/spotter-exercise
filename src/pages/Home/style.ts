@@ -43,15 +43,6 @@ export const Title = styled.h1`
   color: ${({theme}) => theme.colors.colorText};
 `;
 
-export const StyledTable = styled.table`
-  width: 100%;
-  border-collapse: collapse;
-`;
-
-export const TextFilter = styled.p`
-  font-size: 1.3em;
-`;
-
 export const BoxInputAndFilter = styled.div`
   display: flex;
   flex-direction: row;

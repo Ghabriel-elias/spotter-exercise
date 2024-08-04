@@ -6,7 +6,7 @@ import { Table, TableHead} from '@mui/material'
 import {Loading} from '../../Components/Loading';
 import { Input } from '../../Components/Input';
 import { RowItem } from '../../Components/RowItem';
-import Filter from '../../Components/FilterData';
+import { Filter } from '../../Components/Filter';
 
 export const HomeView = ({
   columns,
@@ -18,7 +18,15 @@ export const HomeView = ({
   columnsData,
   rowPerPage,
   handleChangeRow,
-  loading
+  loading,
+  error,
+  handleClose,
+  handleMenuItemClick,
+  handleToggle,
+  open,
+  options,
+  selectedIndex,
+  anchorRef
 }: ReturnType<typeof useHomeModel>) => {
   
   if(loading) {
@@ -33,7 +41,15 @@ export const HomeView = ({
        <S.Title>Spotter Exercise</S.Title>
        <S.BoxInputAndFilter>
           <Input searchByName={searchByName}/>
-          <Filter />
+          <Filter 
+            anchorRef={anchorRef}
+            handleClose={handleClose}
+            handleMenuItemClick={handleMenuItemClick}
+            handleToggle={handleToggle}
+            open={open}
+            options={options}
+            selectedIndex={selectedIndex}
+          />
         </S.BoxInputAndFilter>
       </S.HeaderContainer>
       <S.TableContent>
