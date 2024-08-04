@@ -8,6 +8,9 @@ export const FilterContent = styled(ButtonGroup)`
   border-radius: 8px;
   overflow: hidden;
   outline: none;
+  @media (max-width: 580px) {
+    height: 2em; 
+  }
 `;
 
 export const ButtonFilter = styled(Button)`
@@ -18,6 +21,9 @@ export const ButtonFilter = styled(Button)`
   &:hover {
     background-color: ${({ theme }) => theme.colors.lightColor};
     border: none;
+  }
+  @media (max-width: 580px) {
+    font-size: 10px; 
   }
 `;
 

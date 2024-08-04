@@ -21,6 +21,7 @@ export const Pagination = ({
       component="div"
       count={totalPages}
       rowsPerPage={rowPerPage}
+      labelRowsPerPage='Rows/page'
       page={currentPage - 1}
       onPageChange={(event, page) => {
         handlePageChange(page)

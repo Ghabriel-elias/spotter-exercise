@@ -35,18 +35,27 @@ export const TableContent = styled(TableContainer)`
     background: ${({theme}) => theme.colors.secundaryColor};
     border-radius: 10px;
   }
-
+  @media (max-width: 680px) {
+    max-height: calc(75vh - 3rem);
+  }
 `;
 
 export const Title = styled.h1`
   font-size: 2em;
   color: ${({theme}) => theme.colors.colorText};
+  @media (max-width: 580px) {
+    font-size: 1.5em;
+  }
 `;
 
 export const BoxInputAndFilter = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+  @media (max-width: 580px) {
+    flex-direction: column;
+    align-items: flex-end;
+  }
 `;
 
 export const HeaderContainer = styled.div`
