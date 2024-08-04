@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { TableData } from '../../models/sheetData';
 import Papa from 'papaparse';
+import { useFilters } from '../../hooks/useFilters';
 
 export const useHomeModel = () => {
   const [data, setData] = useState<TableData[]>([]);
@@ -12,11 +13,16 @@ export const useHomeModel = () => {
   const currentItems: TableData[] = data?.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(data.length / rowPerPage);
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
   const [open, setOpen] = useState(false);
   const anchorRef = useRef<HTMLDivElement>(null);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const options = ['Most recent creation date', 'Oldest creation date', 'Operating Status: Authorized ', 'Operating Status: Not Authorized '];
+  const {
+    filterOldestCreateDate,
+    filterRecentCreateDate,
+    filterStatusAuthorized,
+    filterStatusNotAuthorized
+  } = useFilters(saveData.current)
 
   const columns = {
     created_dt: 'Created_DT',
@@ -39,12 +45,47 @@ export const useHomeModel = () => {
     return str.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase();
   }
 
+  function getRecentCreateDate() {
+    setCurrentPage(1)
+    setRowPerPage(10)
+    setData(filterRecentCreateDate())
+  }
+
+  function getOldestCreateDate() {
+    setCurrentPage(1)
+    setRowPerPage(10)
+    setData(filterOldestCreateDate())
+  }
+
+  function getStatusAuthorized() {
+    setCurrentPage(1)
+    setRowPerPage(10)
+    setData(filterStatusAuthorized())
+  }
+
+  function getStatusNotAuthorized() {
+    setCurrentPage(1)
+    setRowPerPage(10)
+    setData(filterStatusNotAuthorized())
+  }
+
+
+  const filters = {
+    0: getRecentCreateDate,
+    1: getOldestCreateDate,
+    2: getStatusAuthorized,
+    3: getStatusNotAuthorized
+  }
+
   const handleMenuItemClick = (index: number) => {
     if(selectedIndex === index) {
+      setData(saveData.current)
       setSelectedIndex(null)
       setOpen(false)
       return
     }
+    const callback = filters[index]
+    callback()
     setSelectedIndex(index);
     setOpen(false);
   };
@@ -66,10 +107,16 @@ export const useHomeModel = () => {
 
   const searchByName = (term: string) => {
     if(term.length === 0) {
-      setData(saveData.current)
+      if(!selectedIndex) {
+        setData(saveData.current)
+        return
+      }
+      const callback = filters[selectedIndex]
+      callback()
       return
     }
-    const newItems = saveData.current?.filter(item => {
+    const dataToFilter = selectedIndex ? data : saveData.current
+    const newItems = dataToFilter?.filter(item => {
       return normalizeString(item?.legal_name).includes(normalizeString(term))
     })
     setCurrentPage(1)
@@ -104,11 +151,11 @@ export const useHomeModel = () => {
           setData(jsonData);
         },
         error: (error: any) => {
-          setError(`Error parsing data: ${error?.message}`);
+          console.error(`Error parsing data: ${error?.message}`);
         }
       });
     } catch (error: any) {
-      setError(`Error fetching data: ${error?.message}`);
+      console.error(`Error fetching data: ${error?.message}`);
     } finally {
       setLoading(false);
     }
@@ -128,7 +175,6 @@ export const useHomeModel = () => {
     totalPages,
     searchByName,
     columnsData,
-    error,
     handleChangeRow,
     rowPerPage,
     loading,
@@ -138,6 +184,6 @@ export const useHomeModel = () => {
     open,
     selectedIndex,
     options,
-    anchorRef
+    anchorRef,
   }
 }
