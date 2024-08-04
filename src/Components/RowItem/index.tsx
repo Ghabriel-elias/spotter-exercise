@@ -1,21 +1,30 @@
-import { RowData } from "../../models/sheetData";
-import { StyledTd, StyledTr } from "./style"
+import { TableBody, TableRow } from "@mui/material";
+import { Row } from "./style"
+import { TableData } from "../../models/sheetData";
 
 
 interface RowItemProps {
-  rowIndex: number;
-  row: RowData;
+  currentItems: TableData[]
 }
 
 export const RowItem = ({
-  row,
-  rowIndex
+  currentItems
 }: RowItemProps) => {
   return (
-    <StyledTr key={rowIndex}>
-      {Object.values(row).map((item, index) => (
-        <StyledTd key={index}>{item}</StyledTd>
-      ))}
-    </StyledTr>
+    <TableBody>
+      {currentItems.map((row, index) => {
+          return (
+            <TableRow hover key={index}>
+              {Object.values(row).map((item: string, index: number) => {
+                return (
+                  <Row key={index}>
+                    {item}
+                  </Row>
+                );
+              })}
+            </TableRow>
+          );
+        })}
+    </TableBody>
   )
 }
