@@ -17,14 +17,14 @@
     "@mui/material": "^5.16.6",
     "material": "^0.9.15",
     "papaparse": "^5.4.1",
-    "react": "17.0.1",
-    "react-dom": "17.0.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-icons": "^5.2.1",
     "styled-components": "^6.1.12"
   },
   "devDependencies": {
     "@types/papaparse": "^5.3.14",
-    "@types/react": "17.0.80",
+    "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^7.15.0",
     "@typescript-eslint/parser": "^7.15.0",
