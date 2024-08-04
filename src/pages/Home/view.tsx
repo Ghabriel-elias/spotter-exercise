@@ -6,37 +6,46 @@ import { Pagination } from '../../Components/Pagination';
 import { useHomeModel } from './model';
 import styled from 'styled-components';
 import { RiFilter3Line } from 'react-icons/ri';
+import theme from '../../global/theme';
+import { FiSearch } from 'react-icons/fi';
 
 
 export const HomeView = ({
-  data,
   columns,
   currentItems,
   currentPage,
   handlePageChange,
   indexOfLastItem,
-  totalPages
+  totalPages,
+  searchByName,
+  columnsData
 }: ReturnType<typeof useHomeModel>) => {
-
+  
   return (
     <S.Container>
       <HeaderContainer>
        <S.Title>Spotter Exercise</S.Title>
-       <BoxIconText onClick={() => {
-        console.log('te')
-       }}>
-
-        <RiFilter3Line color='#333333' size={25}/>
-        <S.TextFilter>Filter</S.TextFilter>
-       </BoxIconText>
+       <BoxInputAndFilter>
+        <BoxInput>
+          <FiSearch  />
+          <Input
+            placeholder='Search Legal name'
+            onChange={(e) => searchByName(e.target.value)}
+          />
+        </BoxInput>
+        <BoxIconText onClick={() => {}}>
+          <RiFilter3Line size={25}/>
+          <S.TextFilter>Filter</S.TextFilter>
+        </BoxIconText>
+       </BoxInputAndFilter>
 
       </HeaderContainer>
       <S.TableWrapper>
         <S.StyledTable>
         <thead>
           <tr>
-            {data[0] && data[0]?.map((header: keyof typeof columns, index: number) => (
-              <ColumnItem index={index} text={columns[header] || ''}/>
+            {columnsData?.map((item: string, index) => (
+              <ColumnItem index={index} text={columns[item] || ''}/>
             ))}
           </tr>
         </thead>
@@ -70,10 +79,40 @@ export const BoxIconText = styled.button`
   flex-direction: row;
   align-items: center;
   gap: 10px;
-  background-color: #B2B2B2;
-  border: 0px;
+  border: 1px solid ${theme.colors.primaryColor};
+  background-color: ${({theme}) => theme.colors.lightColor};
   padding: 0px 10px;
+  color: ${({theme}) => theme.colors.primaryColor};
   border-radius: 8px;
   height: 3rem;
   cursor: pointer;
+  &:hover {
+    background-color: ${({theme}) => theme.colors.primaryColor};
+    color: ${({theme}) => theme.colors.lightColor};
+  }
+`;
+
+export const BoxInput = styled.div`
+  display: flex;
+  flex-direction: row;
+  border: 1px solid ${theme.colors.primaryColor};
+  color: ${theme.colors.primaryColor};
+  align-items: center;
+  height: 3em; 
+  padding: 0px 15px;
+  border-radius: 8px;
+  background-color: ${({theme}) => theme.colors.lightColor};
+  margin-right: 15px;
+`;
+
+export const Input = styled.input`
+  padding: 0px 10px;
+  border: none;
+  outline: none;
+`;
+
+export const BoxInputAndFilter = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 `;

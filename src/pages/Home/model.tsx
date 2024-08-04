@@ -1,16 +1,31 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import Papa from 'papaparse';
+import { useEffect, useRef, useState } from 'react';
 
 export const useHomeModel = () => {
-
   const [data, setData] = useState([]);
-  const [currentPage, setCurrentPage] = useState(0)
+  const saveData = useRef([])
+  const [currentPage, setCurrentPage] = useState(1)
   const indexOfLastItem = (currentPage * 10);
-  const indexOfFirstItem = (indexOfLastItem - 10) + 1;
-  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem + 1);
+  const indexOfFirstItem = (indexOfLastItem - 10);
+  const currentItems = data?.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(data.length / 10);
+  const [error, setError] = useState('')
 
+  function normalizeString(str: string) {
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  }
+
+  const searchByName = (term: string) => {
+    if(term.length === 0) {
+      setData(saveData.current)
+      return
+    }
+    const newItems = saveData.current?.filter(item => {
+      return normalizeString(item?.legal_name).includes(normalizeString(term))
+    })
+
+    setData(newItems)
+  }
+  
   const columns = {
     created_dt: 'Created_DT',
     data_source_modified_dt: 'Modifed_DT',
@@ -26,38 +41,56 @@ export const useHomeModel = () => {
     out_of_service_date: 'Out of service date'
   }
 
+  const columnsData = [...Object.keys(columns)] 
+
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
   };
 
   const fetchData = async () => {
-    const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS8EePM4SduXVEAOsFBbNY-DvugHbilvOH77U_4AlEGUYlZJY2xeqJg7zbpeOjmv_ioc05xShukC5im/pub?output=csv'
-
+    const spreadsheetId = '1pLhD12Sabatn0021htHx7GFk75lfN0j2BXQq2PWb1VA';
+    const sheetId = '1874221723'; 
+    const url = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&gid=${sheetId}`;
+  
     try {
-      const response = await axios.get(url);
-      const csvData = response.data;
-      Papa.parse(csvData, {
-        complete: (result) => {
-          setData(result?.data);
-          handlePageChange(1)
-        },
-      });
+      const response = await fetch(url);
+      const text = await response.text();
+      const rows = text.split('\n').map(row => row.split(','));
+      if (rows.length) {
+        const headers = rows[0].map(header => header.replace(/"/g, '').trim());
+        const jsonData = rows.slice(1).map(row => {
+          let rowData = {};
+          row.forEach((cell, index) => {
+            const header = headers[index];
+            if (header) { 
+              rowData[header] = cell.replace(/"/g, '').trim(); 
+            }
+          });
+          return rowData;
+        });
+        saveData.current = jsonData
+        setData(jsonData)
+      } else {
+        setError('No data found')
+      }
     } catch (error) {
-      console.error('Error fetching data:', error);
+      setError(`Error fetching data: ${error}`)
     }
-  };
-
+  }
+    
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData()
+  }, [])  
 
   return {
-    data,
     columns,
     currentItems,
     currentPage,
     handlePageChange,
     indexOfLastItem,
-    totalPages
+    totalPages,
+    searchByName,
+    columnsData,
+    error
   }
 }

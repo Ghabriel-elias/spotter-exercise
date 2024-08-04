@@ -49,5 +49,4 @@ export const StyledTable = styled.table`
 
 export const TextFilter = styled.p`
   font-size: 1.3em;
-  color: ${({theme}) => theme.colors.colorText};
 `;
