@@ -1,27 +1,73 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Bar } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { Chart, registerables } from 'chart.js';
+import { TableData } from '../../../../models/sheetData';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+Chart.register(...registerables);
 
 interface BarChartProps {
-  data: any[];
+  data: TableData[];
 }
 
-export const BarChart: React.FC<BarChartProps> = ({ data }) => {
-  const filteredData = data.filter(item => item.out_of_service_date);
-  const chartData = {
-    labels: [...new Set(filteredData.map(item => item.created_dt))],
-    datasets: [
-      {
-        label: 'Out of Service per Month',
-        data: filteredData.map(item => item.power_units),
-        backgroundColor: 'rgba(75,192,192,1)',
-      },
-    ],
-  };
+const BarChart: React.FC<BarChartProps> = ({ data }) => {
+  const chartData = useMemo(() => {
+    // Agrupar dados por mês e contar o número de empresas "Out of Service"
+    const counts: { [key: string]: number } = {};
+
+    data.forEach((item) => {
+      if (item.out_of_service_date) {
+        const date = new Date(item.out_of_service_date);
+        const monthYear = `${date.getMonth() + 1}/${date.getFullYear()}`; // MM/YYYY
+
+        if (!counts[monthYear]) {
+          counts[monthYear] = 0;
+        }
+        counts[monthYear] += 1;
+      }
+    });
+
+    // Preparar os dados para o gráfico
+    const labels = Object.keys(counts);
+    const values = Object.values(counts);
+
+    return {
+      labels,
+      datasets: [
+        {
+          label: 'Out of Service Companies',
+          data: values,
+          backgroundColor: 'rgba(75, 192, 192, 0.6)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1,
+        },
+      ],
+    };
+  }, [data]);
 
   return (
-    <Bar data={chartData} />
+    <div>
+      <Bar
+        data={chartData}
+        options={{
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'Month/Year',
+              },
+            },
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: 'Number of Companies',
+              },
+            },
+          },
+        }}
+      />
+    </div>
   );
 };
+
+export default BarChart;

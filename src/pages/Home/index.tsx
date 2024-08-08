@@ -1,34 +1,46 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Box, Button } from '@mui/material';
 import { useData } from '../../hooks/useData';
-import { BarChart } from './components/BarChart';
 import { Loading } from './components/Loading';
 import { SaveConfigModal } from './components/SaveConfigModal';
 import { Table } from './components/Table';
+import BarChart from './components/BarChart';
+import { GridPaginationModel } from '@mui/x-data-grid';
 
 export const Home = () => {
-  const { data, loading } = useData();
-  const [openModal, setOpenModal] = useState(false);
+  const { data, loading } = useData(); 
+  const [openModal, setOpenModal] = useState(false); 
   const [columnOrder, setColumnOrder] = useState<string[]>([]);
-  const [columnSize, setColumnSize] = useState<{ [key: string]: number }>({});
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({pageSize: 10, page: 1})
 
   const handleSave = (name: string) => {
-    localStorage.setItem(name, JSON.stringify({ columnOrder, columnSize }));
+    localStorage.setItem(name, JSON.stringify({ columnOrder }));
   };
 
   const handleLoad = (name: string) => {
     const savedConfig = localStorage.getItem(name);
     if (savedConfig) {
-      const { columnOrder, columnSize } = JSON.parse(savedConfig);
+      const { columnOrder, paginationModel } = JSON.parse(savedConfig);
       setColumnOrder(columnOrder);
-      setColumnSize(columnSize);
+      setPaginationModel(paginationModel)
     }
   };
 
-  if(loading) {
-    return (
-      <Loading/>
-    )
+  useEffect(() => {
+    const storageColumns = localStorage.getItem('SAVE_CONFIG_COLUMNS_TABLE')
+    if(storageColumns) {
+      const {visibleColumns} = JSON.parse(storageColumns)
+      setColumnOrder(visibleColumns)
+    }
+    const storagepaginationModel = localStorage.getItem('SAVE_CONFIG_PAGINATION')
+    if(storagepaginationModel) {
+      const paginationModel = JSON.parse(storagepaginationModel)
+      setPaginationModel(paginationModel)
+    }
+  }, [])
+
+  if (loading) {
+    return <Loading />; 
   }
 
   return (
@@ -37,11 +49,11 @@ export const Home = () => {
         <Table
           data={data}
           columnOrder={columnOrder}
-          columnSize={columnSize}
-          onColumnSizeChange={setColumnSize}
           onColumnOrderChange={setColumnOrder}
+          setPaginationModel={setPaginationModel}
+          paginationModel={paginationModel}
         />
-        <BarChart data={data} />
+        <BarChart data={data} /> 
         <Button variant="contained" onClick={() => setOpenModal(true)}>
           Save/Load View
         </Button>
