@@ -11,7 +11,7 @@ export const RowItem = ({
   currentItems
 }: RowItemProps) => {
   return (
-    <div>
+    <TableBody>
       {currentItems.map((row, index) => {
           return (
             <TableRow hover key={index}>
@@ -25,6 +25,6 @@ export const RowItem = ({
             </TableRow>
           );
         })}
-    </div>
+    </TableBody>
   )
 }
