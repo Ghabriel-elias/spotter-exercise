@@ -1,22 +1,26 @@
 import { TableRow } from "@mui/material";
-import { Cell } from "./style"
+import { Cell, Item } from "./style"
+import { ArrowDropDown } from "@mui/icons-material";
 
 interface ColumnProps {
   columnsData: string[];
-  columns: any
 }
 
 export const Column = ({
-  columns,
   columnsData
 }: ColumnProps) => {
   return (
-    <TableRow>
+    <div style={{display: 'flex', flexDirection: 'row'}}>
       {columnsData.map((column) => (
-        <Cell>
-          {columns[column]}
-        </Cell>
+        <Item>
+          <button>
+           <ArrowDropDown/>
+          </button>
+          <Cell>
+            {column}
+          </Cell>
+        </Item>
       ))}
-    </TableRow>
+    </div>
   )
 }

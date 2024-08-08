@@ -10,7 +10,6 @@ import { Filter } from '../../Components/Filter';
 import { EmptySearch } from '../../Components/EmptySearch';
 
 export const HomeView = ({
-  columns,
   currentItems,
   currentPage,
   handlePageChange,
@@ -56,7 +55,6 @@ export const HomeView = ({
         <Table stickyHeader>
           <TableHead>
             <Column
-              columns={columns}
               columnsData={columnsData}
             />
           </TableHead>    
