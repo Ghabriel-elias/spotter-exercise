@@ -13,15 +13,19 @@ export const SaveConfigModal: React.FC<SaveLoadModalProps> = ({ open, onClose, o
   const [selectedTemplate, setSelectedTemplate] = useState('');
 
   const handleSave = () => {
-    onSave(name);
-    setName('');
-    onClose();
+    if (name) {
+      onSave(name);
+      setName('');
+      onClose();
+    }
   };
 
   const handleLoad = () => {
-    onLoad(selectedTemplate);
-    setSelectedTemplate('');
-    onClose();
+    if (selectedTemplate) {
+      onLoad(selectedTemplate);
+      setSelectedTemplate('');
+      onClose();
+    }
   };
 
   return (
@@ -47,6 +51,12 @@ export const SaveConfigModal: React.FC<SaveLoadModalProps> = ({ open, onClose, o
             fullWidth
           >
             {Object.keys(localStorage).map((key) => (
+              key === 'SAVE_CONFIG_COLUMNS_TABLE' || 
+              key === 'SAVE_CONFIG_COLUMNS_VISIBILITY' ||
+              key === 'SAVE_CONFIG_PAGINATION' || 
+              key === 'loglevel'
+              ? null
+              :
               <MenuItem key={key} value={key}>
                 {key}
               </MenuItem>

@@ -1,18 +1,20 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DataGrid, GridColDef, GridColumnVisibilityModel, GridPaginationModel, GridToolbar } from '@mui/x-data-grid';
 import { Box } from '@mui/material';
 
 interface TableViewProps {
   data: any[];
   columnOrder: string[];
-  onColumnOrderChange: (order: string[]) => void;
-  setPaginationModel: (pageSize: GridPaginationModel) => void;
+  columnVisibility: GridColumnVisibilityModel;
+  onColumnOrderChange: (order: string[], visibilityModel: GridColumnVisibilityModel) => void;
+  setPaginationModel: (model: GridPaginationModel) => void;
   paginationModel: GridPaginationModel;
 }
 
-export const Table: React.FC<TableViewProps> = ({ data, columnOrder, paginationModel, onColumnOrderChange, setPaginationModel }) => {
+export const Table: React.FC<TableViewProps> = ({ data, columnOrder, columnVisibility, paginationModel, onColumnOrderChange, setPaginationModel }) => {
   const [columns, setColumns] = useState<GridColDef[]>([]);
   const [rows, setRows] = useState<any[]>(data);
+  const [columnVisibilityModel, setColumnVisibilityModel] = useState<GridColumnVisibilityModel>(columnVisibility);
 
   useEffect(() => {
     if (data.length) {
@@ -20,7 +22,7 @@ export const Table: React.FC<TableViewProps> = ({ data, columnOrder, paginationM
         field: key,
         headerName: key.toUpperCase(),
         width: 150,
-        editable: key.includes('date'), 
+        editable: key.includes('date'),
       }));
 
       const orderedCols = columnOrder.length
@@ -28,15 +30,18 @@ export const Table: React.FC<TableViewProps> = ({ data, columnOrder, paginationM
         : cols;
 
       setColumns(orderedCols);
+
+      // Set the initial column visibility model based on the loaded settings
+      setColumnVisibilityModel(columnVisibility);
     }
-  }, [data]);
+  }, [data, columnOrder, columnVisibility]);
 
   const handleColumnVisibilityChange = (newVisibilityModel: GridColumnVisibilityModel) => {
-    const visibleColumns = columns
-      .filter(col => newVisibilityModel[col.field] !== false)
-      .map(col => col.field);
-    onColumnOrderChange(visibleColumns);
-    localStorage.setItem("SAVE_CONFIG_COLUMNS_TABLE", JSON.stringify({visibleColumns}));
+    setColumnVisibilityModel(newVisibilityModel);
+    const visibleColumns = Object.keys(newVisibilityModel)
+      .filter((key) => newVisibilityModel[key] !== false);
+    onColumnOrderChange(visibleColumns, newVisibilityModel);
+    localStorage.setItem("SAVE_CONFIG_COLUMNS_TABLE", JSON.stringify({ visibleColumns, columnVisibilityModel: newVisibilityModel }));
   };
 
   return (
@@ -44,12 +49,13 @@ export const Table: React.FC<TableViewProps> = ({ data, columnOrder, paginationM
       <DataGrid
         rows={rows}
         columns={columns}
-        pageSizeOptions={[10, 25, 100]} 
-        paginationModel={{page: paginationModel.page, pageSize: paginationModel.pageSize}}
+        pageSizeOptions={[10, 25, 100]}
+        paginationModel={{ page: paginationModel.page, pageSize: paginationModel.pageSize }}
         onPaginationModelChange={(model) => {
-          setPaginationModel(model)
+          setPaginationModel(model);
           localStorage.setItem("SAVE_CONFIG_PAGINATION", JSON.stringify(model));
         }}
+        columnVisibilityModel={columnVisibilityModel}
         onColumnVisibilityModelChange={handleColumnVisibilityChange}
         components={{ Toolbar: GridToolbar }}
         disableSelectionOnClick
